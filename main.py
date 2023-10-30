@@ -1,82 +1,55 @@
-import base64
-import tempfile
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 
-from telegram import Update, InputFile
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from handlers import start, logout, create, delete, menu
+
 import os
 from dotenv_vault import load_dotenv
 
+from utils import i18n
+
 load_dotenv()
 
-from utils import request
+
+async def callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+
+    await query.answer()
+
+    if query.data == "create":
+        await create(update, context)
+    elif query.data == "delete":
+        await delete(update, context)
+    elif query.data == "logout":
+        await logout(update, context)
+    elif query.data == "info":
+        await info(update, context)
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if context.args:
-        await join(update, context)
-    else:
-        data = {
-            'telegramUserId': update.effective_user.id
-        }
-
-        output_president_init = request.post("/citizen/v1/citizens/president/init", data=data)
-
-        await update.message.reply_text(
-            f"Hi, {update.effective_user.full_name} here is link to invite tenants from you block of apartments and QR "
-            f"code what you can print:\n"
-        )
-
-        await update.message.reply_text(f"{output_president_init['url']}")
-
-        base64_img = output_president_init['qrCode'].replace("data:image/png;base64,", "")
-
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
-            binary_data = base64.b64decode(base64_img)
-            temp_file.write(binary_data)
-
-        with open(temp_file.name, 'rb') as photo:
-            await update.message.reply_photo(
-                photo=InputFile(photo),
-                caption="QR code what you can print"
-            )
-
-
-async def join(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    data = {
-        'telegramUserId': update.effective_user.id,
-        'blockId': context.args[0]
-    }
-
-    output_join_block = request.post("/citizen/v1/citizens/tenant/login", data=data)
-
-    await update.message.reply_text(
-        f"Hi, {update.effective_user.full_name} you joined to block of apartments\n"
-        f"Block id: {output_join_block['blockId']}\n"
+async def info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    formatted_text = i18n(update.effective_user.language_code)("info")
+    await update.effective_message.reply_chat_action("upload_video")
+    await update.effective_user.send_video(
+        video="media/info.mp4",
+        width=1920,
+        height=1080,
+        caption=formatted_text,
+        parse_mode="Markdown"
     )
 
 
-async def logout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    output_exit_block = request.delete("/citizen/v1/citizens/tenant/logout?telegramUserId={}".format(update.effective_user.id))
+def main() -> None:
+    app = ApplicationBuilder().token(os.getenv("TELEGRAM_TOKEN")).build()
 
-    await update.message.reply_text(
-        f"Hi, {update.effective_user.full_name} you exit from block of apartments\n"
-        f"Block id: {output_exit_block['blockId']}\n"
-    )
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("menu", menu))
+    app.add_handler(CallbackQueryHandler(callback))
 
+    app.add_handler(CommandHandler("create", create))
+    app.add_handler(CommandHandler("logout", logout))
 
-async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    output_delete_block = request.delete("/citizen/v1/citizens/president/delete?telegramUserId={}".format(update.effective_user.id))
-
-    await update.message.reply_text(
-        f"Hi, {update.effective_user.full_name} you delete block of apartments\n"
-        f"Block id: {output_delete_block['blockId']}\n"
-    )
+    app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
-app = ApplicationBuilder().token(os.getenv("TELEGRAM_TOKEN")).build()
-
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("delete", delete))
-app.add_handler(CommandHandler("logout", logout))
-
-app.run_polling()
+if __name__ == '__main__':
+    main()

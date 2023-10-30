@@ -1,0 +1,16 @@
+{
+  "info": "În acest **chatbot**, puteți:\\n- Crea **propuneri**\\n- **Vota** alte propuneri\\n- Pune **întrebări** administrației\\n- **Raporta probleme**\\n- **Vă puteți alege singuri**\\n- Alegeți locatarii pentru funcțiile de **administrație** sau **consilier**.",
+  "start": "Salut, {full_name}, aici este link-ul pentru a invita locatarii din blocul tău și codul QR pe care îl poți imprima sau link-ul pe care îl poți trimite locatarilor:",
+  "joined": "Salut, {full_name}, te-ai alăturat blocului de apartamente {block_id}.\\n Administratorul este @{president_telegram_username}.",
+  "intro_video_caption": "Democrația începe cu tine și în blocul tău de apartamente.",
+  "create": "Creare",
+  "info_label": "Informații",
+  "settings": "Setări",
+  "delete": "Ștergere",
+  "logout": "Deconectare",
+  "support_platform": "Platformă de suport",
+  "commands_prompt": "Acestea sunt comenzile tale; inițiază schimbările din partea ta:",
+  "exit_message": "Salut, {full_name}, ai ieșit din blocul de apartamente {block_id}.",
+  "delete_message": "Salut, {full_name}, ai șters blocul de apartamente {block_id}."
+
+}

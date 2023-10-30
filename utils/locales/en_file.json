@@ -1,0 +1,16 @@
+{
+  "info": "In this **chatbot**, you can:\\n- Create **proposals**\\n- **Vote** on others\\n- Ask **questions** to the administration\\n- **Report problems**\\n- **Elect yourself**\\n- Elect your tenants for the positions of **administration** or **counselor**.",
+  "start": "Hi, {full_name}, here is the link to invite tenants from your block of apartments and the QR code that you can print or the link that you can send to tenants:",
+  "joined": "Hi, {full_name}, you have joined the {block_id} block of apartments.\\nThe administrator is @{president_telegram_username}.",
+  "intro_video_caption": "Democracy starts with you and in your block of apartments.",
+  "create": "Create",
+  "info_label": "Info",
+  "settings": "Settings",
+  "delete": "Delete",
+  "logout": "Logout",
+  "support_platform": "Support platform",
+  "commands_prompt": "These are your commands; initiate the changes from your end:",
+  "exit_message": "Hi, {full_name}, you have exited from the {block_id} block of apartments.",
+  "delete_message": "Hi, {full_name}, you have deleted the {block_id} block of apartments."
+
+}
